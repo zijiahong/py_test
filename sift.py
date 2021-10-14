@@ -28,6 +28,7 @@ def get_matchs(des, img):
             if min[1] > i[1]:
                 min[1] = i[1]
         cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
+        # minx | miny | maxx | maxy
         res.append((min[0], min[1], max[0], max[1]))
     # cv2.imshow("img", img)
     # cv2.waitKey(0)
@@ -36,11 +37,21 @@ def get_matchs(des, img):
 
 def append_img_des(img, name, file_name):
     kp, des = sift.detectAndCompute(img, None)
-    fsw = cv2.FileStorage(file_name, cv2.FILE_STORAGE_WRITE)
+    fsw = cv2.FileStorage(file_name, cv2.FILE_STORAGE_APPEND)
     fsw.write(name, des)
     fsw.release()
     return name
 
+def get_des(names,file_name):
+    res = []
+    fs = cv2.FileStorage(file_name,cv2.FileStorage_READ)
+    for name in names:
+        des =  fs.getNode(name).mat()
+        if des != None:
+            res.append(des)
+            continue
+        print("node not found, name is ",name)
+    return res
 
 def center_points(list):
     res = []
