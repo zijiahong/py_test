@@ -1,0 +1,41 @@
+from platform import machine
+import cv2
+import numpy as np
+
+sift = cv2.xfeatures2d.SIFT_create()
+bf = cv2.BFMatcher()
+
+
+def get_matchs(des, img):
+    res = []
+    (kp, img_des) = sift.detectAndCompute(img, None)
+    for d in des:
+        matches = bf.knnMatch(d, img_des, k=2)
+        good = []
+        for m, n in matches:
+            if m.distance < 0.75 * n.distance:
+                good.append(kp[m.trainIdx])
+        good = cv2.KeyPoint_convert(good)
+        min = [1000000000, 1000000000]
+        max = [0, 0]
+        for i in good:
+            if max[0] < i[0]:
+                max[0] = i[0]
+            if max[1] < i[1]:
+                max[1] = i[1]
+            if min[0] > i[0]:
+                min[0] = i[0]
+            if min[1] > i[1]:
+                min[1] = i[1]
+        cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
+        res.append((min[0],min[1],max[0],max[1]))
+    # cv2.imshow("img", img)
+    # cv2.waitKey(0)
+    return res
+
+
+img1 = cv2.imread("test1.png")
+img2 = cv2.imread("test2.jpg")
+
+kp1, des1 = sift.detectAndCompute(img1, None)
+print(get_matchs([des1], img2))
