@@ -5,7 +5,7 @@ import numpy as np
 sift = cv2.xfeatures2d.SIFT_create()
 bf = cv2.BFMatcher()
 
-# 获取flann匹配器
+# 获取 flann 匹配器
 FLANN_INDEX_KDTREE = 0
 indexParams = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
 searchParams = dict(checks=50)
@@ -22,6 +22,11 @@ def get_matchs(des, img):
             if m.distance < 0.75 * n.distance:
                 good.append(kp[m.trainIdx])
         good = cv2.KeyPoint_convert(good)
+
+        # 判断匹配关键点的数量
+        print(len(good))
+        if len(good) < 20:
+            continue
         min = [1000000000, 1000000000]
         max = [0, 0]
         for i in good:
@@ -33,7 +38,7 @@ def get_matchs(des, img):
                 min[0] = i[0]
             if min[1] > i[1]:
                 min[1] = i[1]
-        cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
+        # cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
         # minx | miny | maxx | maxy
         res.append((min[0], min[1], max[0], max[1]))
     # cv2.imshow("img", img)
@@ -50,6 +55,10 @@ def get_flann_matchs(des, img):
             if m.distance < 0.75 * n.distance:
                 good.append(kp[m.trainIdx])
         good = cv2.KeyPoint_convert(good)
+        # 判断匹配关键点的数量
+        print(len(good))
+        if len(good) < 20:
+            continue
         min = [1000000000, 1000000000]
         max = [0, 0]
         for i in good:
@@ -61,7 +70,7 @@ def get_flann_matchs(des, img):
                 min[0] = i[0]
             if min[1] > i[1]:
                 min[1] = i[1]
-        cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
+        # cv2.rectangle(img, (min[0], min[1]), (max[0], max[1]), (0, 255, 0), 2)
         # minx | miny | maxx | maxy
         res.append((min[0], min[1], max[0], max[1]))
     # cv2.imshow("img", img)
